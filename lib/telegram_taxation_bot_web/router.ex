@@ -14,6 +14,14 @@ defmodule TelegramTaxationBotWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/api", TelegramTaxationBotWeb do
+    pipe_through :api
+
+    scope "/bot" do
+      post "/webhook", BotController, :webhook
+    end
+  end
+
   scope "/", TelegramTaxationBotWeb do
     pipe_through :browser
 

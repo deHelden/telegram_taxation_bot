@@ -9,6 +9,8 @@ defmodule TelegramTaxationBot.Repo.Migrations.AddInitStructure do
       timestamps()
     end
 
+    create unique_index(:users, :telegram_chat_id)
+
     create table(:incomes) do
       add(:user_id, references(:users))
       add(:date, :date, null: false)
