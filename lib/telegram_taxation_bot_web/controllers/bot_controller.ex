@@ -51,26 +51,23 @@ defmodule TelegramTaxationBotWeb.BotController do
   def webhook(
         conn,
         %{
-          "message" =>
-            %{
-              "text" => input_message,
-              "chat" => %{"id" => chat_id},
-              "from" => %{"username" => username}
-            } = message
+          "message" => %{
+            "text" => input_message,
+            "chat" => %{"id" => chat_id},
+            "from" => %{"username" => username}
+          }
         }
       ) do
     # try do
-    reply_to_message = get_in(message, ["reply_to_message", "text"])
+    # reply_to_message = get_in(message, ["reply_to_message", "text"])
 
     %MessageData{
       message: input_message,
       name: username,
-      chat_id: chat_id,
-      reply_to_message: reply_to_message
+      chat_id: chat_id
+      # reply_to_message: reply_to_message
     }
     |> Pipelines.call()
-
-    # |> Pipelines.call()
 
     # rescue
     #   e ->

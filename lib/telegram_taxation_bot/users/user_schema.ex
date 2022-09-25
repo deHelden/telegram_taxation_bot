@@ -1,4 +1,4 @@
-defmodule TelegramTaxationBot.Users.User do
+defmodule TelegramTaxationBot.Users.UserSchema do
   use Ecto.Schema
 
   schema "users" do

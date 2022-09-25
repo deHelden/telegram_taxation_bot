@@ -1,4 +1,4 @@
-defmodule TelegramTaxationBot.Incomes.Income do
+defmodule TelegramTaxationBot.Taxations.IncomeSchema do
   use Ecto.Schema
 
   schema "incomes" do
