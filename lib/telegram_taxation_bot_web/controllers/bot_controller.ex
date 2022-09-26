@@ -65,7 +65,6 @@ defmodule TelegramTaxationBotWeb.BotController do
       message: input_message,
       name: username,
       chat_id: chat_id
-      # reply_to_message: reply_to_message
     }
     |> Pipelines.call()
 

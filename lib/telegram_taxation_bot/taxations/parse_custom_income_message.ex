@@ -18,11 +18,11 @@ defmodule TelegramTaxationBot.Taxations.ParseCustomTransactionMessage do
          validated_result when validated_result == true <- validate_parsed(parsed) do
       amount = String.replace(parsed["amount"], ",", ".")
 
-      {float_amount, _} = Float.parse(amount)
+      {decimal_amount, _} = Decimal.parse(amount)
 
       # TODO: add correct currency code for show
       %{
-        amount: -float_amount,
+        amount: decimal_amount,
         currency: parsed["currency"],
         date: parsed["date"]
       }

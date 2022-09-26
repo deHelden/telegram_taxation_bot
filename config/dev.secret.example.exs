@@ -12,3 +12,5 @@ config :telegram_taxation_bot, TelegramTaxationBot.Repo,
 
 # token from botfather
 config :nadia, token: "bot_father:token"
+
+config :telegram_taxation_bot, currency_exchange_url: "https://url"

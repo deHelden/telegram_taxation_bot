@@ -7,7 +7,7 @@ defmodule TelegramTaxationBot.UsersContext do
   alias TelegramTaxationBot.Users.UserSchema
   alias TelegramTaxationBot.Repo
   # create user
-  def(create_user(%MessageData{} = users_input)) do
+  def create_user(%MessageData{} = users_input) do
     # input = InputGate.coerse_create_user_input(users_input)
     users_input
     # преобразовывать входные данные
@@ -30,7 +30,6 @@ defmodule TelegramTaxationBot.UsersContext do
 
   defp create_user_changeset(input) do
     %UserSchema{}
-    # Like input gate but  for repo
     |> cast(input, [:telegram_chat_id, :name])
     |> validate_required([:telegram_chat_id, :name])
     |> unique_constraint(:telegram_chat_id)

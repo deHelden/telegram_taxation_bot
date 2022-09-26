@@ -4,6 +4,7 @@ defmodule TelegramTaxationBot.Application do
   @moduledoc false
 
   use Application
+  alias TelegramTaxationBot.CurrencyApi
 
   @impl true
   def start(_type, _args) do
@@ -15,9 +16,10 @@ defmodule TelegramTaxationBot.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: TelegramTaxationBot.PubSub},
       # Start the Endpoint (http/https)
-      TelegramTaxationBotWeb.Endpoint
+      TelegramTaxationBotWeb.Endpoint,
       # Start a worker by calling: TelegramTaxationBot.Worker.start_link(arg)
       # {TelegramTaxationBot.Worker, arg}
+      CurrencyApi.child_spec()
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
