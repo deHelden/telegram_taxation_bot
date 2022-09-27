@@ -23,6 +23,10 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
     |> create_income_changeset()
     |> Repo.insert!()
 
+    # TODO: |> RenderIncome.call()
+    # TODO: pass to TG output_gate
+    # TODO:
+
     # if check parsed exists && validate && get exchange_rates
     # do
     #   save to database
