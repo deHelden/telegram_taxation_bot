@@ -12,15 +12,13 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
 
     rates = CurrencyApi.get_rates(input.date, input.currency)
 
-    target_amount = Decimal.mult(input.amount, Decimal.from_float(rates["rate"]))
-
     %{
       user_id: payload.user_id,
       amount: input.amount,
       currency: input.currency,
       date: input.date,
       exchange_rate: rates["rate"],
-      target_amount: target_amount
+      target_amount: target_amount(input.amount, Decimal.from_float(rates["rate"]))
     }
     |> create_income_changeset()
     |> Repo.insert!()
@@ -39,6 +37,12 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
     %IncomeSchema{}
     |> cast(input, fields)
     |> validate_required(fields)
+  end
+
+  defp target_amount(amount, rate) do
+    target = Decimal.mult(amount, rate)
+
+    Decimal.round(target, 2, :half_even)
   end
 
   # defp error_message do
