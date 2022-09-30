@@ -18,6 +18,7 @@ defmodule TelegramTaxationBot.Taxations.RenderIncome do
 
   def render_message(income) do
     "AMOUNT IN GEL : #{income.target_amount}"
+    "AMOUNT IN GEL : #{income.target_amount}"
     # #{transaction_header}
     # ```
 
