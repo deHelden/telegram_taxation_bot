@@ -6,7 +6,7 @@ defmodule TelegramTaxationBot.Taxations.InputGate do
   def coerse_create_income_input(%MessageData{} = input) do
     %CreateTaxation{
       message: input.message,
-      user_id: input.current_user.id
+      current_user: input.current_user
     }
   end
 

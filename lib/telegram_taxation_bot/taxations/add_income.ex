@@ -1,7 +1,9 @@
 defmodule TelegramTaxationBot.Taxations.AddIncome do
   alias TelegramTaxationBot.Taxations.ParseCustomTransactionMessage
-  alias TelegramTaxationBot.Taxations.Structs.CreateTaxation
+  alias TelegramTaxationBot.Taxations.Structs.{CreateTaxation, CreateIncomeOutputStruct}
   alias TelegramTaxationBot.Taxations.IncomeSchema
+  alias TelegramTaxationBot.Taxations.RenderIncome
+  alias TelegramTaxationBot.TelegramContext
   alias TelegramTaxationBot.CurrencyApi
   alias TelegramTaxationBot.Repo
 
@@ -12,19 +14,26 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
 
     rates = CurrencyApi.get_rates(input.date, input.currency)
 
-    %{
-      user_id: payload.user_id,
-      amount: input.amount,
-      currency: input.currency,
-      date: input.date,
-      exchange_rate: rates["rate"],
-      target_amount: target_amount(input.amount, Decimal.from_float(rates["rate"]))
-    }
-    |> create_income_changeset()
-    |> Repo.insert!()
+    rendered_message =
+      %{
+        user_id: payload.current_user.id,
+        amount: input.amount,
+        currency: input.currency,
+        date: input.date,
+        exchange_rate: rates["rate"],
+        target_amount: target_amount(input.amount, Decimal.from_float(rates["rate"]))
+      }
+      |> create_income_changeset()
+      |> Repo.insert!()
+      |> RenderIncome.call()
 
-    # TODO: |> RenderIncome.call()
-    # TODO: pass to TG output_gate
+    %CreateIncomeOutputStruct{
+      output_message: rendered_message,
+      current_user: payload.current_user
+    }
+    |> TelegramContext.send_message()
+
+    # TODO: pass to TG input_gate
     # TODO:
 
     # if check parsed exists && validate && get exchange_rates

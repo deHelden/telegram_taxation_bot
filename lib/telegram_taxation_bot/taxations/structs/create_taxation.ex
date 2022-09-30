@@ -1,3 +1,3 @@
 defmodule TelegramTaxationBot.Taxations.Structs.CreateTaxation do
-  defstruct [:message, :user_id]
+  defstruct [:message, :current_user]
 end
