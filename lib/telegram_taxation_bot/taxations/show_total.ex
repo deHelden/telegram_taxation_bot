@@ -18,11 +18,11 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
     # TODO: transform to table with TableRex
     current_month_incomes = user_id |> get_last_month_incomes() |> render_table()
 
-    rendered_message = """
-    ```#{current_month_incomes}```
+    rendered_message = ~s(
+      #{current_month_incomes}
 
-    Total Taxation Amount : #{total_income}
-    """
+      Total Taxation Amount : #{total_income}
+      )
 
     %CreateIncomeOutputStruct{
       output_message: rendered_message,
@@ -44,7 +44,7 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
   defp get_last_month_incomes(user_id) do
     IncomeSchema
     |> where([i], i.user_id == ^user_id)
-    |> select([i], [i.amount, i.currency, i.date])
+    |> select([i], [i.amount, i.currency, i.date, i.target_amount])
     |> Repo.all()
 
     # [
@@ -55,7 +55,7 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
 
   defp render_table(incomes) do
     title = "Incomes this month"
-    header = ["Amount", "Currency", "Date"]
+    header = ["Amount", "Currency", "Date", "Converted"]
 
     TableRex.quick_render!(incomes, header, title)
   end
