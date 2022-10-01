@@ -11,19 +11,37 @@ defmodule TelegramTaxationBot.Taxations.RenderIncome do
   #   updated_at: ~N[2022-09-27 14:09:47],
   #   user_id: 1
   # }
+
   def call(input) do
-    IO.inspect(input)
     render_message(input)
   end
 
   def render_message(income) do
-    "AMOUNT IN GEL : #{income.target_amount}"
-    "AMOUNT IN GEL : #{income.target_amount}"
-    # #{transaction_header}
-    # ```
+    table =
+      table_data(income)
+      |> TableRex.Table.new([], "")
+      |> TableRex.Table.put_column_meta(0, padding: 0)
+      |> TableRex.Table.render!(horizontal_style: :off, vertical_style: :off)
 
-    # #{table}
-    # ```
-    # """
+    header = "Поступление средств"
+
+    """
+    #{header}
+    ```
+
+    #{table}
+    ```
+    """
+  end
+
+  defp table_data(input) do
+    list = []
+    list = [["Сумма", input.amount] | list]
+    list = [["Валюта", input.currency] | list]
+    list = [["Дата", input.date] | list]
+    list = [["Курс", input.exchange_rate] | list]
+    list = [["GEL", input.target_amount] | list]
+
+    list
   end
 end
