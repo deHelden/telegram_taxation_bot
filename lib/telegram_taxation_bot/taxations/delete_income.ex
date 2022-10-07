@@ -1,33 +1,27 @@
 defmodule TelegramTaxationBot.Taxations.DeleteIncome do
+  import Ecto.Query
+  alias TelegramTaxationBot.Repo
+
   alias TelegramTaxationBot.Taxations.Structs.{CreateTaxation, CreateIncomeOutputStruct}
-  alias TelegramTaxationBot.Taxations.ParseDeleteTransactionMessage
   alias TelegramTaxationBot.Taxations.IncomeSchema
   alias TelegramTaxationBot.TelegramContext
 
-  import Ecto.Changeset
-
   def call(%CreateTaxation{} = payload) do
-    input = payload |> ParseDeleteTransactionMessage.call()
-    IO.inspect(input.id)
+    user_id = payload.current_user.id
 
-    rendered_message = %{
-      id: input.id
-    }
+    IncomeSchema
+    |> where([i], i.user_id == ^user_id)
+    |> Repo.delete_all()
 
-    IO.inspect(rendered_message)
     # |> create_income_changeset()
     # |> TelegramTaxationBot.Repo.delete!()
 
-    # %CreateIncomeOutputStruct{
-    #   output_message: rendered_message,
-    #   current_user: payload.current_user
-    # }
-    # |> TelegramContext.send_message()
-  end
+    rendered_message = "🕵🏻‍♂️ Я стер все твои поступления."
 
-  defp create_income_changeset(input) do
-    %IncomeSchema{}
-    |> cast(input, :id)
-    |> validate_required(:id)
+    %CreateIncomeOutputStruct{
+      output_message: rendered_message,
+      current_user: payload.current_user
+    }
+    |> TelegramContext.send_message()
   end
 end

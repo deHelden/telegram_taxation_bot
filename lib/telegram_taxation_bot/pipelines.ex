@@ -28,9 +28,9 @@ defmodule TelegramTaxationBot.Pipelines do
     TaxationsContext.create_income(message_data)
   end
 
-  # defp call_with_user(%MessageData{message: "/del" <> _rest} = message_data) do
-  #   TaxationsContext.delete_income(message_data)
-  # end
+  defp call_with_user(%MessageData{message: "/clean" <> _rest} = message_data) do
+    TaxationsContext.clean_incomes(message_data)
+  end
 
   defp call_with_user(%MessageData{message: "/total" <> _rest} = message_data) do
     TaxationsContext.total_income(message_data)

@@ -4,7 +4,7 @@ defmodule TelegramTaxationBot.TaxationsContext do
   alias TelegramTaxationBot.Taxations.{
     InputGate,
     AddIncome,
-    # DeleteIncome,
+    DeleteIncome,
     ShowTotal
   }
 
@@ -14,11 +14,11 @@ defmodule TelegramTaxationBot.TaxationsContext do
     |> AddIncome.call()
   end
 
-  # def delete_income(%MessageData{} = income_input) do
-  #   income_input
-  #   |> InputGate.coerse_create_income_input()
-  #   |> DeleteIncome.call()
-  # end
+  def clean_incomes(%MessageData{} = income_input) do
+    income_input
+    |> InputGate.coerse_create_income_input()
+    |> DeleteIncome.call()
+  end
 
   def total_income(%MessageData{} = income_input) do
     income_input
