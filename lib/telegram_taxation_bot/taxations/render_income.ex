@@ -16,6 +16,17 @@ defmodule TelegramTaxationBot.Taxations.RenderIncome do
     render_message(input)
   end
 
+  @spec render_message(
+          atom
+          | %{
+              :amount => any,
+              :currency => any,
+              :date => any,
+              :exchange_rate => any,
+              :target_amount => any,
+              optional(any) => any
+            }
+        ) :: binary
   def render_message(income) do
     # table =
     table_data(income)

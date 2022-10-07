@@ -13,15 +13,17 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
   def call(%ShowTotalTaxation{} = payload) do
     user_id = payload.current_user.id
 
+    # TODO: may run this async
     total_income = user_id |> get_total_income_by_user() |> Decimal.to_string()
-
-    # TODO: transform to table with TableRex
+    last_month_income = user_id |> get_last_month_income() |> Decimal.to_string()
+    # current_month_incomes may be moved to /stats
     current_month_incomes = user_id |> get_last_month_incomes() |> render_table()
 
     rendered_message = ~s(
       #{current_month_incomes}
 
       Total Taxation Amount : #{total_income}
+      Amount this month: #{last_month_income}
       )
 
     %CreateIncomeOutputStruct{
@@ -37,6 +39,15 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
       where: i.user_id == ^user_id,
       select: sum(i.target_amount)
     )
+    |> Repo.one()
+  end
+
+  def get_last_month_income(user_id) do
+    IncomeSchema
+    |> where([i], i.user_id == ^user_id)
+    |> order_by([i], asc: i.inserted_at)
+    |> limit(1)
+    |> select([i], i.amount * i.exchange_rate)
     |> Repo.one()
   end
 
