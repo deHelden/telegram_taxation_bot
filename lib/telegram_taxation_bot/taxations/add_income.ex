@@ -10,38 +10,61 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
   import Ecto.Changeset
 
   def call(%CreateTaxation{} = payload) do
-    input = payload |> ParseCustomTransactionMessage.call()
-
-    rates = CurrencyApi.get_rates(input.date, input.currency)
-
-    rendered_message =
-      %{
-        user_id: payload.current_user.id,
-        amount: input.amount,
-        currency: input.currency,
-        date: input.date,
-        exchange_rate: rates["rate"],
-        target_amount: target_amount(input.amount, Decimal.from_float(rates["rate"]))
-      }
-      |> create_income_changeset()
-      |> Repo.insert!()
-      |> RenderIncome.call()
-
-    %CreateIncomeOutputStruct{
-      output_message: rendered_message,
-      current_user: payload.current_user
-    }
-    |> TelegramContext.send_message()
-
-    # TODO: pass to TG input_gate
-    # TODO:
-
     # if check parsed exists && validate && get exchange_rates
     # do
     #   save to database
     # else
     #   :parse_error -> parse_error_message
     #   :fetch_exchange_error -> exchange_error_message
+    # TODO: pass to TG input_gate
+
+    user = payload.current_user
+    parse_input = payload |> ParseCustomTransactionMessage.call()
+
+    # TODO: rewrite with monades
+    if parse_input do
+      validate_date = validate_date_boarder(parse_input.date)
+
+      if validate_date do
+        fetch_rates = CurrencyApi.get_rates(parse_input.date, parse_input.currency)
+
+        if fetch_rates do
+          %{
+            user_id: user.id,
+            amount: parse_input.amount,
+            currency: parse_input.currency,
+            date: parse_input.date,
+            exchange_rate: fetch_rates["rate"],
+            target_amount:
+              target_amount(
+                parse_input.amount,
+                Decimal.from_float(fetch_rates["rate"])
+              )
+          }
+          |> create_income_changeset()
+          |> Repo.insert!()
+          |> RenderIncome.call()
+          |> render_message(user)
+        else
+          make_fetch_currency_error_message(parse_input.currency)
+          |> render_message(user)
+        end
+      else
+        make_date_validation_error_message() |> render_message(user)
+      end
+    else
+      make_parse_error_message() |> render_message(user)
+    end
+  end
+
+  def validate_date_boarder(date) do
+    parsed_date_in_past =
+      Date.compare(
+        Date.utc_today(),
+        date |> Date.from_iso8601!()
+      ) == :gt
+
+    if parsed_date_in_past, do: true, else: false
   end
 
   defp create_income_changeset(input) do
@@ -56,6 +79,35 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
     target = Decimal.mult(amount, rate)
 
     Decimal.round(target, 2, :half_even)
+  end
+
+  def make_parse_error_message do
+    ~s(
+      Извини , не могу понять этот формат.
+      \r\nпопробуй так:
+      /add 1000 EUR 2022-02-01
+    )
+  end
+
+  def make_date_validation_error_message do
+    ~s(
+      Извини, я еще не научился управлять будущими поступлениями.
+      \r\nПопробуй использовать меня для подсчета уже полученных средств.
+    )
+  end
+
+  def make_fetch_currency_error_message(currency) do
+    ~s(
+      Извини, я не смог скачать курсы обмена для #{currency}
+    )
+  end
+
+  def render_message(message, user) do
+    %CreateIncomeOutputStruct{
+      output_message: message,
+      current_user: user
+    }
+    |> TelegramContext.send_message()
   end
 
   # defp error_message do
