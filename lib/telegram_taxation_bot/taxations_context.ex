@@ -41,7 +41,7 @@ defmodule TelegramTaxationBot.TaxationsContext do
 
   def total_income(%MessageData{} = income_input) do
     income_input
-    |> InputGate.coerse_create_total_input()
+    |> InputGate.coerse_create_income_input()
     |> ShowTotal.call()
   end
 end

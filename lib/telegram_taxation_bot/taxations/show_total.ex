@@ -4,58 +4,81 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
 
   alias TelegramTaxationBot.TelegramContext
   alias TelegramTaxationBot.Taxations.IncomeSchema
+  alias TelegramTaxationBot.Taxations.ParseTotalMessage
 
   alias TelegramTaxationBot.Taxations.Structs.{
-    ShowTotalTaxation,
+    CreateTaxation,
     CreateIncomeOutputStruct
   }
 
-  def call(%ShowTotalTaxation{} = payload) do
-    user_id = payload.current_user.id
+  def call(%CreateTaxation{} = payload) do
+    user = payload.current_user
+    user_id = user.id
 
-    # may run this async
-    total_income = user_id |> get_total_income_by_user() |> Decimal.to_string()
-    # TODO: sum all incomes that have affected current month
-    last_month_income = user_id |> get_last_month_income() |> Decimal.to_string()
-    # current_month_incomes is a table may be moved to /stats
-    current_month_incomes = user_id |> get_last_month_incomes() |> render_table()
+    parsed_input = payload |> ParseTotalMessage.call()
 
-    rendered_message = ~s(
-      #{current_month_incomes}
+    if parsed_input do
+      # may run this async
 
-      Total Taxation Amount : #{total_income}
-      Amount this month: #{last_month_income}
-      )
+      total_income =
+        user_id
+        |> get_total_income_to_month(parsed_input.date)
+        |> Decimal.to_string()
 
-    %CreateIncomeOutputStruct{
-      output_message: rendered_message,
-      current_user: payload.current_user
-    }
-    |> TelegramContext.send_message()
+      month_income = user_id |> get_month_income(parsed_input.date)
+      # all_incomes is a table may be moved to /stats
+      all_incomes = user_id |> get_all_incomes(parsed_input.date) |> render_table()
+
+      rendered_message = ~s(
+        #{all_incomes}
+
+        Total Taxation Amount : #{total_income}
+        \r\nAmount in month '#{parsed_input.date}': #{month_income}
+        )
+
+      rendered_message
+      |> render_message(user)
+    else
+      "не могу распознать дату" |> render_message(user)
+    end
   end
 
-  defp get_total_income_by_user(user_id) do
-    from(
-      i in IncomeSchema,
-      where: i.user_id == ^user_id,
-      select: sum(i.target_amount)
-    )
-    |> Repo.one()
-  end
+  defp get_total_income_to_month(user_id, date) do
+    to_date = Date.from_iso8601!(date) |> Date.end_of_month()
 
-  def get_last_month_income(user_id) do
     IncomeSchema
-    |> where([i], i.user_id == ^user_id)
-    |> order_by([i], asc: i.inserted_at)
-    |> limit(1)
-    |> select([i], i.amount * i.exchange_rate)
+    |> where([i], i.user_id == ^user_id and i.date <= ^to_date)
+    |> select([i], sum(i.target_amount))
     |> Repo.one()
+  end
+
+  def get_month_income(user_id, date) do
+    from_date = Date.from_iso8601!(date) |> Date.beginning_of_month()
+    to_date = Date.from_iso8601!(date) |> Date.end_of_month()
+
+    result =
+      IncomeSchema
+      |> where([i], i.user_id == ^user_id and i.date >= ^from_date and i.date <= ^to_date)
+      |> order_by([i], asc: i.inserted_at)
+      |> select([i], i.amount * i.exchange_rate)
+      |> Repo.all()
+      |> Enum.reduce(2, &Decimal.add(&1, &2))
+      |> Decimal.round(2, :half_even)
+
+    if result != nil do
+      result
+    else
+      Decimal.from_float(0.0)
+    end
   end
 
   # TODO: get only records for this month
-  defp get_last_month_incomes(user_id) do
+  defp get_all_incomes(user_id, date) do
+    to_date = Date.from_iso8601!(date) |> Date.end_of_month()
+
     IncomeSchema
-    |> where([i], i.user_id == ^user_id)
+    |> where([i], i.user_id == ^user_id and i.date <= ^to_date)
+    |> order_by([i], asc: i.date)
     |> select([i], [i.amount, i.currency, i.date, i.target_amount])
     |> Repo.all()
 
@@ -70,5 +93,13 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
     header = ["Amount", "Currency", "Date", "Converted"]
 
     TableRex.quick_render!(incomes, header, title)
+  end
+
+  defp render_message(message, user) do
+    %CreateIncomeOutputStruct{
+      output_message: message,
+      current_user: user
+    }
+    |> TelegramContext.send_message()
   end
 end

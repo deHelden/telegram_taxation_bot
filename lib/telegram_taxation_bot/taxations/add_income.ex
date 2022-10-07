@@ -46,7 +46,7 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
     end
   end
 
-  def validate_date_boarder(date) do
+  defp validate_date_boarder(date) do
     parsed_date_in_past =
       Date.compare(
         Date.utc_today(),
@@ -70,7 +70,7 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
     Decimal.round(target, 2, :half_even)
   end
 
-  def make_parse_error_message do
+  defp make_parse_error_message do
     ~s(
       Извини , не могу понять этот формат.
       \r\nпопробуй так:
@@ -78,20 +78,20 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
     )
   end
 
-  def make_date_validation_error_message do
+  defp make_date_validation_error_message do
     ~s(
       Извини, я еще не научился управлять будущими поступлениями.
       \r\nПопробуй использовать меня для подсчета уже полученных средств.
     )
   end
 
-  def make_fetch_currency_error_message do
+  defp make_fetch_currency_error_message do
     ~s(
       Извини, я не смог скачать курсы обмена для указанной валюты.
     )
   end
 
-  def render_message(message, user) do
+  defp render_message(message, user) do
     %CreateIncomeOutputStruct{
       output_message: message,
       current_user: user
