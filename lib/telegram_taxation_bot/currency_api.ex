@@ -20,14 +20,21 @@ defmodule TelegramTaxationBot.CurrencyApi do
       {"Content-Type", "application/json;charset=UTF-8"}
     ]
 
-    :get
-    |> Finch.build(url, headers)
-    |> Finch.request(__MODULE__)
-    |> get_json_body()
-    # maybe sort by date before taking the last one
-    |> Enum.at(-1)
-    |> Access.get("currencies")
-    |> Enum.at(0)
+    result =
+      :get
+      |> Finch.build(url, headers)
+      |> Finch.request(__MODULE__)
+      |> get_json_body()
+      # maybe sort by date before taking the last one
+      |> Enum.at(-1)
+      |> Access.get("currencies")
+      |> Enum.at(0)
+
+    if result != nil do
+      {:rate_fetch_success, result}
+    else
+      {:fetch_rates_error, nil}
+    end
   end
 
   def get_json_body({_state, %Finch.Response{body: body, headers: _headers, status: _status}}) do

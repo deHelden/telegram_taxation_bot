@@ -21,13 +21,16 @@ defmodule TelegramTaxationBot.Taxations.ParseCustomTransactionMessage do
       {decimal_amount, _} = Decimal.parse(amount)
 
       # TODO: add correct currency code for show
-      %{
-        amount: decimal_amount,
-        currency: parsed["currency"],
-        date: parsed["date"]
+      {
+        :parsed,
+        %{
+          amount: decimal_amount,
+          currency: parsed["currency"],
+          date: parsed["date"]
+        }
       }
     else
-      _result -> false
+      _result -> {:error, :parse_error}
     end
   end
 

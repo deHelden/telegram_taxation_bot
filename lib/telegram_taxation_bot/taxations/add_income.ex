@@ -10,50 +10,39 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
   import Ecto.Changeset
 
   def call(%CreateTaxation{} = payload) do
-    # if check parsed exists && validate && get exchange_rates
-    # do
-    #   save to database
-    # else
-    #   :parse_error -> parse_error_message
-    #   :fetch_exchange_error -> exchange_error_message
-    # TODO: pass to TG input_gate
-
     user = payload.current_user
-    parse_input = payload |> ParseCustomTransactionMessage.call()
 
-    # TODO: rewrite with monades
-    if parse_input do
-      validate_date = validate_date_boarder(parse_input.date)
-
-      if validate_date do
-        fetch_rates = CurrencyApi.get_rates(parse_input.date, parse_input.currency)
-
-        if fetch_rates do
-          %{
-            user_id: user.id,
-            amount: parse_input.amount,
-            currency: parse_input.currency,
-            date: parse_input.date,
-            exchange_rate: fetch_rates["rate"],
-            target_amount:
-              target_amount(
-                parse_input.amount,
-                Decimal.from_float(fetch_rates["rate"])
-              )
-          }
-          |> create_income_changeset()
-          |> Repo.insert!()
-          |> RenderIncome.call()
-          |> render_message(user)
-        else
-          make_fetch_currency_error_message(parse_input.currency)
-          |> render_message(user)
-        end
-      else
-        make_date_validation_error_message() |> render_message(user)
-      end
+    with(
+      {:parsed, parse_input} <- payload |> ParseCustomTransactionMessage.call(),
+      {:rate_fetch_success, fetch_rates} <-
+        CurrencyApi.get_rates(parse_input.date, parse_input.currency),
+      {:valid_date, true} <- validate_date_boarder(parse_input.date)
+    ) do
+      %{
+        user_id: user.id,
+        amount: parse_input.amount,
+        currency: parse_input.currency,
+        date: parse_input.date,
+        exchange_rate: fetch_rates["rate"],
+        target_amount:
+          target_amount(
+            parse_input.amount,
+            Decimal.from_float(fetch_rates["rate"])
+          )
+      }
+      |> create_income_changeset()
+      |> Repo.insert!()
+      |> RenderIncome.call()
+      |> render_message(user)
     else
-      make_parse_error_message() |> render_message(user)
+      {:error, :parse_error} ->
+        make_parse_error_message() |> render_message(user)
+
+      {:fetch_rates_error, nil} ->
+        {:error, make_fetch_currency_error_message() |> render_message(user)}
+
+      {:invalid_date, false} ->
+        make_date_validation_error_message() |> render_message(user)
     end
   end
 
@@ -64,7 +53,7 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
         date |> Date.from_iso8601!()
       ) == :gt
 
-    if parsed_date_in_past, do: true, else: false
+    if parsed_date_in_past, do: {:valid_date, true}, else: {:invalid_date, false}
   end
 
   defp create_income_changeset(input) do
@@ -96,9 +85,9 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
     )
   end
 
-  def make_fetch_currency_error_message(currency) do
+  def make_fetch_currency_error_message do
     ~s(
-      Извини, я не смог скачать курсы обмена для #{currency}
+      Извини, я не смог скачать курсы обмена для указанной валюты.
     )
   end
 
@@ -109,14 +98,4 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
     }
     |> TelegramContext.send_message()
   end
-
-  # defp error_message do
-  #   """
-  #   Я не смог распознать твою команду добавления.
-
-  #   Примеры команд, которые точно сработают:
-
-  #   `/add 1000.2 USD 2022-01-01`
-  #   """
-  # end
 end
