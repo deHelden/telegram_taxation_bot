@@ -13,13 +13,8 @@ defmodule TelegramTaxationBot.Taxations.DeleteIncome do
     |> where([i], i.user_id == ^user_id)
     |> Repo.delete_all()
 
-    # |> create_income_changeset()
-    # |> TelegramTaxationBot.Repo.delete!()
-
-    rendered_message = "🕵🏻‍♂️ Я стер все твои поступления."
-
     %CreateIncomeOutputStruct{
-      output_message: rendered_message,
+      output_message: "🕵🏻‍♂️ Я стер все твои поступления.",
       current_user: payload.current_user
     }
     |> TelegramContext.send_message()

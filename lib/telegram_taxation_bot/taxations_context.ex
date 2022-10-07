@@ -1,8 +1,11 @@
 defmodule TelegramTaxationBot.TaxationsContext do
+  import Ecto.Query
+  alias TelegramTaxationBot.Repo
   alias TelegramTaxationBot.MessageData
 
   alias TelegramTaxationBot.Taxations.{
     InputGate,
+    IncomeSchema,
     AddIncome,
     DeleteIncome,
     ShowTotal
@@ -18,6 +21,22 @@ defmodule TelegramTaxationBot.TaxationsContext do
     income_input
     |> InputGate.coerse_create_income_input()
     |> DeleteIncome.call()
+  end
+
+  def income_exist?(%MessageData{} = income_input) do
+    user_id = income_input.current_user.id
+
+    record =
+      IncomeSchema
+      |> where([i], i.user_id == ^user_id)
+      |> limit(1)
+      |> Repo.one()
+
+    if record do
+      {:ok, :record_exist}
+    else
+      {:error, :empty_incomes}
+    end
   end
 
   def total_income(%MessageData{} = income_input) do
