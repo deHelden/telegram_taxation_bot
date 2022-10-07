@@ -13,10 +13,11 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
   def call(%ShowTotalTaxation{} = payload) do
     user_id = payload.current_user.id
 
-    # TODO: may run this async
+    # may run this async
     total_income = user_id |> get_total_income_by_user() |> Decimal.to_string()
+    # TODO: sum all incomes that have affected current month
     last_month_income = user_id |> get_last_month_income() |> Decimal.to_string()
-    # current_month_incomes may be moved to /stats
+    # current_month_incomes is a table may be moved to /stats
     current_month_incomes = user_id |> get_last_month_incomes() |> render_table()
 
     rendered_message = ~s(
