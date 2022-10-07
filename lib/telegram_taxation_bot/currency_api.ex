@@ -13,27 +13,31 @@ defmodule TelegramTaxationBot.CurrencyApi do
 
   # working copy of fetch rate
   def get_rates(date, currency) do
-    url = make_api_url(date, currency)
+    if currency != "GEL" do
+      url = make_api_url(date, currency)
 
-    headers = [
-      {"Accept", "application/json, text/plain, */*"},
-      {"Content-Type", "application/json;charset=UTF-8"}
-    ]
+      headers = [
+        {"Accept", "application/json, text/plain, */*"},
+        {"Content-Type", "application/json;charset=UTF-8"}
+      ]
 
-    result =
-      :get
-      |> Finch.build(url, headers)
-      |> Finch.request(__MODULE__)
-      |> get_json_body()
-      # maybe sort by date before taking the last one
-      |> Enum.at(-1)
-      |> Access.get("currencies")
-      |> Enum.at(0)
+      result =
+        :get
+        |> Finch.build(url, headers)
+        |> Finch.request(__MODULE__)
+        |> get_json_body()
+        # maybe sort by date before taking the last one
+        |> Enum.at(-1)
+        |> Access.get("currencies")
+        |> Enum.at(0)
 
-    if result != nil do
-      {:rate_fetch_success, result}
+      if result != nil do
+        {:rate_fetch_success, result}
+      else
+        {:fetch_rates_error, nil}
+      end
     else
-      {:fetch_rates_error, nil}
+      {:rate_fetch_success, %{"rate" => 1.0}}
     end
   end
 
