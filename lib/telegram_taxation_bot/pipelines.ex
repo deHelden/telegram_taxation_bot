@@ -44,6 +44,10 @@ defmodule TelegramTaxationBot.Pipelines do
     end
   end
 
+  # TODO: add notification to pay taxes. Send notification at the end of month
+  # TODO: add ability to mark taxes as payed and not payed.
+  #       (provide an ability to set reminder to pay later and send notification later)
+
   # if any message
   defp call_with_user(%MessageData{message: _message}) do
     # TODO: log unpredicted messages

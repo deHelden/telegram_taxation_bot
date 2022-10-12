@@ -34,6 +34,7 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
 
         Total Taxation Amount : #{total_income}
         \r\nAmount in month '#{parsed_input.date}': #{month_income}
+        \r\n1% tax to pay: #{get_month_tax2pay_amount(month_income)}
         )
 
       rendered_message
@@ -62,7 +63,10 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
     |> Repo.one()
   end
 
-  # TODO: get only records for this month
+  def get_month_tax2pay_amount(month_income) do
+    Decimal.mult(month_income, Decimal.from_float(0.01)) |> Decimal.round(2, :half_even)
+  end
+
   defp get_all_incomes(user_id, date) do
     to_date = Date.from_iso8601!(date) |> Date.end_of_month()
 

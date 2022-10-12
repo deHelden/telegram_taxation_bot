@@ -65,9 +65,7 @@ defmodule TelegramTaxationBot.Taxations.AddIncome do
   end
 
   defp target_amount(amount, rate) do
-    target = Decimal.mult(amount, rate)
-
-    Decimal.round(target, 2, :half_even)
+    Decimal.mult(amount, rate) |> Decimal.round(2, :half_even)
   end
 
   defp make_parse_error_message do
