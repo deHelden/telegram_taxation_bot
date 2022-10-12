@@ -56,20 +56,10 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
     from_date = Date.from_iso8601!(date) |> Date.beginning_of_month()
     to_date = Date.from_iso8601!(date) |> Date.end_of_month()
 
-    result =
-      IncomeSchema
-      |> where([i], i.user_id == ^user_id and i.date >= ^from_date and i.date <= ^to_date)
-      |> order_by([i], asc: i.inserted_at)
-      |> select([i], i.amount * i.exchange_rate)
-      |> Repo.all()
-      |> Enum.reduce(2, &Decimal.add(&1, &2))
-      |> Decimal.round(2, :half_even)
-
-    if result != nil do
-      result
-    else
-      Decimal.from_float(0.0)
-    end
+    IncomeSchema
+    |> where([i], i.user_id == ^user_id and i.date >= ^from_date and i.date <= ^to_date)
+    |> select([i], sum(i.target_amount))
+    |> Repo.one()
   end
 
   # TODO: get only records for this month
