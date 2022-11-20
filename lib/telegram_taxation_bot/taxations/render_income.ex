@@ -18,10 +18,17 @@ defmodule TelegramTaxationBot.Taxations.RenderIncome do
 
   def render_message(income) do
     # table =
-    table_data(income)
-    |> TableRex.Table.new([], "")
-    |> TableRex.Table.put_column_meta(0, padding: 0)
-    |> TableRex.Table.render!(horizontal_style: :off, vertical_style: :off)
+    table =
+      table_data(income)
+      |> TableRex.Table.new([], "")
+      |> TableRex.Table.put_column_meta(:all, align: :left, padding: 0)
+      |> TableRex.Table.render!(horizontal_style: :off, vertical_style: :off)
+
+    """
+    ```
+    #{table}
+    ```
+    """
 
     # ~s(#{table})
   end

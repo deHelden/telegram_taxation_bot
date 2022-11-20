@@ -26,16 +26,24 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
         |> Decimal.to_string()
 
       month_income = user_id |> get_month_income(parsed_input.date)
+
+      result_list = []
+      result_list = [["Total Taxation Amount", total_income] | result_list]
+      result_list = [["Amount in month '#{parsed_input.date}'", month_income] | result_list]
+      result_list = [["1% tax to pay", get_month_tax2pay_amount(month_income)] | result_list]
+
+      result = result_list |> render_table()
+
       # all_incomes is a table may be moved to /stats
-      all_incomes = user_id |> get_all_incomes(parsed_input.date) |> render_table()
+      all_incomes = user_id |> get_all_incomes(parsed_input.date) |> render_total_table()
 
-      rendered_message = ~s(
-        #{all_incomes}
+      rendered_message = """
+      ```
+      #{all_incomes}
 
-        Total Taxation Amount : #{total_income}
-        \r\nAmount in month '#{parsed_input.date}': #{month_income}
-        \r\n1% tax to pay: #{get_month_tax2pay_amount(month_income)}
-        )
+      #{result}
+      ```
+      """
 
       rendered_message
       |> render_message(user)
@@ -82,11 +90,19 @@ defmodule TelegramTaxationBot.Taxations.ShowTotal do
     # ]
   end
 
-  defp render_table(incomes) do
-    title = "Incomes this month"
+  defp render_total_table(incomes) do
+    # title = "Incomes this month"
     header = ["Amount", "Currency", "Date", "Converted"]
 
-    TableRex.quick_render!(incomes, header, title)
+    TableRex.Table.new(incomes, header)
+    |> TableRex.Table.put_column_meta(:all, align: :left, padding: 0)
+    |> TableRex.Table.render!(horizontal_style: :off, vertical_style: :off)
+  end
+
+  defp render_table(incomes) do
+    TableRex.Table.new(incomes)
+    |> TableRex.Table.put_column_meta(:all, align: :left, padding: 0)
+    |> TableRex.Table.render!(horizontal_style: :off, vertical_style: :off)
   end
 
   defp render_message(message, user) do
