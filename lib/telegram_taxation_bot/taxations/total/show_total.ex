@@ -13,7 +13,6 @@ defmodule TelegramTaxationBot.Taxations.Total.ShowTotal do
 
   def call(%CreateTaxation{} = payload) do
     user = payload.current_user
-    user_id = user.id
 
     # TODO: check if input can't be parsed with tuples
     payload

@@ -5,7 +5,7 @@ defmodule TelegramTaxationBot.Taxations.Total.ParseTotalMessage do
     extract_attrs(input_message)
   end
 
-  def call_old(%{message: input_message, current_user: user}) do
+  def call_old(%{message: input_message}) do
     extract_attrs(input_message)
   end
 
