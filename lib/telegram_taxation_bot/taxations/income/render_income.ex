@@ -1,4 +1,4 @@
-defmodule TelegramTaxationBot.Taxations.RenderIncome do
+defmodule TelegramTaxationBot.Taxations.Income.RenderIncome do
   # %TelegramTaxationBot.Taxations.IncomeSchema{
   #   __meta__: #Ecto.Schema.Metadata<:loaded, "incomes">,
   #   amount: #Decimal<6565>,

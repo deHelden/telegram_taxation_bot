@@ -1,4 +1,4 @@
-defmodule TelegramTaxationBot.Taxations.ParseCustomTransactionMessage do
+defmodule TelegramTaxationBot.Taxations.Income.ParseCustomTransactionMessage do
   @regex ~r/\/add\s(?<amount>\d+[\.,]?\d*)\s(?<currency>\w+)\s(?<date>\d+-\d+-\d+)/u
 
   def call(%{message: input_message}) do

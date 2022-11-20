@@ -1,10 +1,10 @@
-defmodule TelegramTaxationBot.Taxations.ShowTotal do
+defmodule TelegramTaxationBot.Taxations.Total.ShowTotal do
   import Ecto.Query
   alias TelegramTaxationBot.Repo
 
   alias TelegramTaxationBot.TelegramContext
-  alias TelegramTaxationBot.Taxations.IncomeSchema
-  alias TelegramTaxationBot.Taxations.ParseTotalMessage
+  alias TelegramTaxationBot.Taxations.Income.IncomeSchema
+  alias TelegramTaxationBot.Taxations.Total.ParseTotalMessage
 
   alias TelegramTaxationBot.Taxations.Structs.{
     CreateTaxation,

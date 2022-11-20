@@ -1,9 +1,9 @@
-defmodule TelegramTaxationBot.Taxations.DeleteIncome do
+defmodule TelegramTaxationBot.Taxations.Income.DeleteIncome do
   import Ecto.Query
   alias TelegramTaxationBot.Repo
 
   alias TelegramTaxationBot.Taxations.Structs.{CreateTaxation, CreateIncomeOutputStruct}
-  alias TelegramTaxationBot.Taxations.IncomeSchema
+  alias TelegramTaxationBot.Taxations.Income.IncomeSchema
   alias TelegramTaxationBot.TelegramContext
 
   def call(%CreateTaxation{} = payload) do

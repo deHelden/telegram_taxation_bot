@@ -1,4 +1,4 @@
-defmodule TelegramTaxationBot.Taxations.ParseTotalMessage do
+defmodule TelegramTaxationBot.Taxations.Total.ParseTotalMessage do
   @regex ~r/\/total\s(?<date>\d+-\d+-\d+)/u
 
   def call(%{message: input_message}) do

@@ -1,4 +1,4 @@
-defmodule TelegramTaxationBot.Taxations.InputGate do
+defmodule TelegramTaxationBot.Taxations.Income.InputGate do
   alias TelegramTaxationBot.Taxations.Structs.CreateTaxation
   alias TelegramTaxationBot.MessageData
   # course output to what we actually need for users

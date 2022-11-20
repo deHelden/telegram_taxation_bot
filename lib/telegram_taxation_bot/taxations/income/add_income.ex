@@ -1,8 +1,11 @@
-defmodule TelegramTaxationBot.Taxations.AddIncome do
-  alias TelegramTaxationBot.Taxations.ParseCustomTransactionMessage
+defmodule TelegramTaxationBot.Taxations.Income.AddIncome do
+  alias TelegramTaxationBot.Taxations.Income.{
+    IncomeSchema,
+    RenderIncome,
+    ParseCustomTransactionMessage
+  }
+
   alias TelegramTaxationBot.Taxations.Structs.{CreateTaxation, CreateIncomeOutputStruct}
-  alias TelegramTaxationBot.Taxations.IncomeSchema
-  alias TelegramTaxationBot.Taxations.RenderIncome
   alias TelegramTaxationBot.TelegramContext
   alias TelegramTaxationBot.CurrencyApi
   alias TelegramTaxationBot.Repo

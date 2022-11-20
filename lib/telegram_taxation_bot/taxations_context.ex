@@ -3,13 +3,14 @@ defmodule TelegramTaxationBot.TaxationsContext do
   alias TelegramTaxationBot.Repo
   alias TelegramTaxationBot.MessageData
 
-  alias TelegramTaxationBot.Taxations.{
+  alias TelegramTaxationBot.Taxations.Income.{
     InputGate,
     IncomeSchema,
     AddIncome,
-    DeleteIncome,
-    ShowTotal
+    DeleteIncome
   }
+
+  alias TelegramTaxationBot.Taxations.Total.ShowTotal
 
   def create_income(%MessageData{} = income_input) do
     income_input
