@@ -48,7 +48,6 @@ if config_env() == :prod do
       transport_options: [socket_opts: [:inet6]]
     ],
     secret_key_base: secret_key_base,
-    live_view: [signing_salt: Helpers.get_env("telegram_taxation_bot_LIVE_VIEW_SALT")]
 
   # ## Using releases (Elixir v1.9+)
   #
