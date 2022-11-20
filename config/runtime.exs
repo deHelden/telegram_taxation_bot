@@ -47,7 +47,7 @@ if config_env() == :prod do
       certfile: Helpers.get_env("CO2_OFFSET_SSL_CERT_PATH"),
       transport_options: [socket_opts: [:inet6]]
     ],
-    secret_key_base: secret_key_base,
+    secret_key_base: secret_key_base
 
   # ## Using releases (Elixir v1.9+)
   #
