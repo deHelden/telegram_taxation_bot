@@ -14,10 +14,6 @@ if config_env() == :prod do
     end
   end
 
-  # Ensure required env variable are available
-  Helpers.get_env("DASHBOARD_USER")
-  Helpers.get_env("DASHBOARD_PASSWORD")
-
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """
