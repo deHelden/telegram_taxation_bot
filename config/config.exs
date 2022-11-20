@@ -12,7 +12,7 @@ config :telegram_taxation_bot,
 
 # Configures the endpoint
 config :telegram_taxation_bot, TelegramTaxationBotWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "telegramtaxationbot.com"],
   render_errors: [view: TelegramTaxationBotWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: TelegramTaxationBot.PubSub,
   live_view: [signing_salt: "b1dwWPlT"]
