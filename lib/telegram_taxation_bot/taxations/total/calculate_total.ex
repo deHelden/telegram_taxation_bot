@@ -7,7 +7,10 @@ defmodule TelegramTaxationBot.Taxations.Total.CalculateTotal do
   def call({:ok, parsed_input}, user) do
     user_id = user.id
 
-    all_incomes = user_id |> get_all_incomes(parsed_input.date)
+    all_incomes =
+      user_id
+      |> get_all_incomes(parsed_input.date)
+      |> transform_incomes()
 
     total_income =
       user_id
@@ -71,5 +74,9 @@ defmodule TelegramTaxationBot.Taxations.Total.CalculateTotal do
     #   [#Decimal<6200>, "USD", ~D[2022-10-01]],
     #   [#Decimal<5000>, "EUR", ~D[2022-09-29]]
     # ]
+  end
+
+  defp transform_incomes(incomes) do
+    Enum.map(incomes, fn [e1, e2, e3, e4] -> [Decimal.to_string(e1) <> " " <> e2, e3, e4] end)
   end
 end

@@ -1,5 +1,5 @@
 defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
-  @header ["Amount", "Currency", "Date", "Converted"]
+  @header ["Income", "Date", "Converted"]
 
   def call({:ok, input}) do
     total_stats = input.all_incomes |> render_stats_message()
@@ -8,7 +8,6 @@ defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
     """
     ```
     #{total_stats}
-
     ```
     #{taxation_stats}
     """
@@ -33,7 +32,7 @@ defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
 
   defp render_stats_message(incomes) do
     TableRex.Table.new(incomes, @header)
-    |> TableRex.Table.put_column_meta(:all, align: :center, padding: 1)
+    |> TableRex.Table.put_column_meta(:all, align: :center, padding: 0)
     |> TableRex.Table.render!(horizontal_style: :off, vertical_style: :off)
   end
 
