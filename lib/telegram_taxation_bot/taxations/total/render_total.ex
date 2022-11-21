@@ -9,8 +9,8 @@ defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
     ```
     #{total_stats}
 
-    #{taxation_stats}
     ```
+    #{taxation_stats}
     """
   end
 
@@ -23,10 +23,11 @@ defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
   end
 
   defp taxation_info(input) do
+    # TODO: make it buttons
     list = []
-    list = [["1% tax to pay", input.one_percent_tax] | list]
-    list = [["Month income", input.month_income] | list]
-    list = [["Total Taxation Amount", input.total_income] | list]
+    list = [["1% tax to pay this month", "\n└`#{input.one_percent_tax}`"] | list]
+    list = [["Total Month income", "\n└`#{input.month_income}`"] | list]
+    list = [["Total Taxation Amount", "\n└`#{input.total_income}`"] | list]
     list
   end
 
@@ -38,7 +39,7 @@ defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
 
   defp render_message(incomes) do
     TableRex.Table.new(incomes)
-    |> TableRex.Table.put_column_meta(:all, align: :left, padding: 0)
+    |> TableRex.Table.put_column_meta(:all, align: :left, padding: 2)
     |> TableRex.Table.render!(horizontal_style: :off, vertical_style: :off)
   end
 end
