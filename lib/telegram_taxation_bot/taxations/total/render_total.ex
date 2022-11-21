@@ -25,7 +25,7 @@ defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
   defp taxation_info(input) do
     list = []
     list = [["1% tax to pay", input.one_percent_tax] | list]
-    list = [["Amount in month 'date'", input.month_income] | list]
+    list = [["Month income", input.month_income] | list]
     list = [["Total Taxation Amount", input.total_income] | list]
     list
   end

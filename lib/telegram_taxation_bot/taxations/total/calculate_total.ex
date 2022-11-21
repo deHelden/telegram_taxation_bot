@@ -51,7 +51,11 @@ defmodule TelegramTaxationBot.Taxations.Total.CalculateTotal do
   end
 
   def get_month_tax2pay_amount(month_income) do
-    Decimal.mult(month_income, Decimal.from_float(0.01)) |> Decimal.round(2, :half_even)
+    unless month_income do
+      "No income this month"
+    else
+      Decimal.mult(month_income, Decimal.from_float(0.01)) |> Decimal.round(2, :half_even)
+    end
   end
 
   def get_all_incomes(user_id, date) do
