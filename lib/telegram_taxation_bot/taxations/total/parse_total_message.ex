@@ -5,10 +5,6 @@ defmodule TelegramTaxationBot.Taxations.Total.ParseTotalMessage do
     extract_attrs(input_message)
   end
 
-  def call_old(%{message: input_message}) do
-    extract_attrs(input_message)
-  end
-
   def valid_message?(input_message) do
     parsed = parse_message(input_message)
 
@@ -16,15 +12,13 @@ defmodule TelegramTaxationBot.Taxations.Total.ParseTotalMessage do
   end
 
   defp extract_attrs(input_message) do
-    parse_message(input_message)
-
+    # TODO: get rid of with monad
     with parsed when parsed != nil <- parse_message(input_message),
          validated_result when validated_result == true <- validate_parsed(parsed) do
-      %{
-        date: parsed["date"]
-      }
+      {:ok, %{date: parsed["date"]}}
     else
-      _result -> false
+      _ ->
+        {:error, :invalid_date}
     end
   end
 

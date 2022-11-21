@@ -1,7 +1,7 @@
 defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
   @header ["Amount", "Currency", "Date", "Converted"]
 
-  def call(input) do
+  def call({:ok, input}) do
     total_stats = input.all_incomes |> render_stats_message()
     taxation_stats = taxation_info(input) |> render_message()
 
@@ -11,6 +11,14 @@ defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
 
     #{taxation_stats}
     ```
+    """
+  end
+
+  def call({:error, :invalid_date}) do
+    # "Формат этой даты... Похоже на эльфийский. Не могу прочесть."
+    """
+    Попробуй указать любой день нужного месяца
+    /total YYYY-MM-DD
     """
   end
 

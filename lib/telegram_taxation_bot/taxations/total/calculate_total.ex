@@ -4,7 +4,7 @@ defmodule TelegramTaxationBot.Taxations.Total.CalculateTotal do
 
   alias TelegramTaxationBot.Taxations.Income.IncomeSchema
 
-  def call(parsed_input, user) do
+  def call({:ok, parsed_input}, user) do
     user_id = user.id
 
     all_incomes = user_id |> get_all_incomes(parsed_input.date)
@@ -16,12 +16,19 @@ defmodule TelegramTaxationBot.Taxations.Total.CalculateTotal do
 
     month_income = user_id |> get_month_income(parsed_input.date)
 
-    %{
-      all_incomes: all_incomes,
-      total_income: total_income,
-      month_income: month_income,
-      one_percent_tax: get_month_tax2pay_amount(month_income)
+    {
+      :ok,
+      %{
+        all_incomes: all_incomes,
+        total_income: total_income,
+        month_income: month_income,
+        one_percent_tax: get_month_tax2pay_amount(month_income)
+      }
     }
+  end
+
+  def call({:error, :invalid_date}, _) do
+    {:error, :invalid_date}
   end
 
   def get_total_income_to_month(user_id, date) do
