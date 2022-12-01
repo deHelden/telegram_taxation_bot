@@ -7,6 +7,7 @@ defmodule TelegramTaxationBot.Pipelines do
 
   alias TelegramTaxationBot.Taxations.Structs.CreateIncomeOutputStruct
 
+  # TODO: add help buttons to all commands
   def call(%MessageData{message: "/start"} = message_data) do
     user =
       UsersContext.get_user_by_chat_id(message_data.chat_id) ||
@@ -27,7 +28,6 @@ defmodule TelegramTaxationBot.Pipelines do
     end
   end
 
-  # add transaction with currency
   defp call_with_user(%MessageData{message: "/add" <> _rest} = message_data) do
     TaxationsContext.create_income(message_data)
   end
@@ -36,6 +36,7 @@ defmodule TelegramTaxationBot.Pipelines do
     TaxationsContext.clean_incomes(message_data)
   end
 
+  # Add commands: /total_last_month & /total_current_month
   defp call_with_user(%MessageData{message: "/total" <> _rest} = message_data) do
     with {:ok, :record_exist} <- TaxationsContext.income_exist?(message_data) do
       TaxationsContext.total_income(message_data)
