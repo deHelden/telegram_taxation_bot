@@ -50,13 +50,11 @@ defmodule TelegramTaxationBot.Taxations.Income.AddIncome do
   end
 
   defp validate_date_boarder(date) do
-    parsed_date_in_past =
-      Date.compare(
-        Date.utc_today(),
-        date |> Date.from_iso8601!()
-      ) == :gt
+    parsed_date_in_past = Date.compare(Date.utc_today(), date |> Date.from_iso8601!())
 
-    if parsed_date_in_past, do: {:valid_date, true}, else: {:invalid_date, false}
+    not_future_date_validated = parsed_date_in_past == :gt || parsed_date_in_past == :eq
+
+    if not_future_date_validated, do: {:valid_date, true}, else: {:invalid_date, false}
   end
 
   defp create_income_changeset(input) do
