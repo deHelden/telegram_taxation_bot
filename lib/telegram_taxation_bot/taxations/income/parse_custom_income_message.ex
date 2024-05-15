@@ -1,5 +1,5 @@
 defmodule TelegramTaxationBot.Taxations.Income.ParseCustomTransactionMessage do
-  @regex ~r/\/add\s(?<amount>\d+[\.,]?\d*)\s(?<currency>\w+)\s(?<date>\d+-\d+-\d+)/u
+  @regex ~r/\/add\s*(?<amount>\d{1,3}(?:\s?\d{3})*(?:[\.,]\d*)?)\s(?<currency>\w+)\s(?<date>\d{4}-\d{2}-\d{2})/u
 
   def call(%{message: input_message}) do
     extract_attrs(input_message)
@@ -16,7 +16,10 @@ defmodule TelegramTaxationBot.Taxations.Income.ParseCustomTransactionMessage do
 
     with parsed when parsed != nil <- parse_message(input_message),
          validated_result when validated_result == true <- validate_parsed(parsed) do
-      amount = String.replace(parsed["amount"], ",", ".")
+      amount =
+        parsed["amount"]
+        |> String.replace(",", ".")
+        |> String.replace(~r/\s/, "")
 
       {decimal_amount, _} = Decimal.parse(amount)
 

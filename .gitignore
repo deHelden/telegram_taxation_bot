@@ -34,3 +34,8 @@ telegram_taxation_bot-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Ignore lock file
+mix.lock
+
+# Ignore configuration
+.DS_Store
