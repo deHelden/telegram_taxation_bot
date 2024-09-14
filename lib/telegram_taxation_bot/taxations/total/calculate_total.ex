@@ -22,6 +22,7 @@ defmodule TelegramTaxationBot.Taxations.Total.CalculateTotal do
     {
       :ok,
       %{
+        month: parsed_input.date,
         all_incomes: all_incomes,
         total_income: total_income,
         month_income: month_income,

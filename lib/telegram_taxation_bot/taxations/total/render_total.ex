@@ -4,9 +4,11 @@ defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
   def call({:ok, input}) do
     total_stats = input.all_incomes |> render_stats_message()
     taxation_stats = taxation_info(input) |> render_message()
+    month = input.month
 
     """
     ```
+    Total for #{month}:
     #{total_stats}
     ```
     #{taxation_stats}
