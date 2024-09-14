@@ -52,7 +52,7 @@ defmodule TelegramTaxationBot.MixProject do
       {:jason, "~> 1.2"},
       {:finch, "~> 0.13"},
       {:plug_cowboy, "~> 2.5"},
-      {:timex, "~> 3.7.11"}
+      {:timex, "~> 3.7"}
     ]
   end
 
