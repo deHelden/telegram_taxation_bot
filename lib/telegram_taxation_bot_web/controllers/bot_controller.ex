@@ -4,8 +4,6 @@ defmodule TelegramTaxationBotWeb.BotController do
   alias TelegramTaxationBot.{CallbackData, MessageData, Pipelines}
   # alias TelegramTaxationBot.Steps.Telegram.SendMessage
 
-  action_fallback TelegramTaxationBotWeb.FallbackController
-
   def webhook(conn, %{
         "callback_query" => %{
           "data" => callback_data,

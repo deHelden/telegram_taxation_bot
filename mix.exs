@@ -5,7 +5,7 @@ defmodule TelegramTaxationBot.MixProject do
     [
       app: :telegram_taxation_bot,
       version: "0.1.0",
-      elixir: "~> 1.12",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -51,7 +51,8 @@ defmodule TelegramTaxationBot.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:finch, "~> 0.13"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:timex, "~> 3.7.11"}
     ]
   end
 

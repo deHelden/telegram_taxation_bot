@@ -1,5 +1,5 @@
 defmodule TelegramTaxationBot.Taxations.Income.ParseCustomTransactionMessage do
-  @regex ~r/\/add\s*(?<amount>\d{1,3}(?:\s?\d{3})*(?:[\.,]\d*)?)\s(?<currency>\w+)\s(?<date>\d{4}-\d{2}-\d{2})/u
+  @regex ~r/\/add\s*(?<amount>\d{1,3}(?:\s?\d{3})*(?:[\.,]\d*)?(?:\s?\d{1,3})*)\s(?<currency>\w+)\s(?<date>\d{4}-\d{2}-\d{2})/u
 
   def call(%{message: input_message}) do
     extract_attrs(input_message)
