@@ -27,8 +27,8 @@ defmodule TelegramTaxationBot.Taxations.Total.RenderTotal do
     # TODO: make it buttons
     list = []
     list = [["1% tax to pay this month", "\n└`#{input.one_percent_tax}`"] | list]
-    list = [["Total Month income", "\n└`#{input.month_income}`"] | list]
-    list = [["Total Taxation Amount", "\n└`#{input.total_income}`"] | list]
+    list = [["Total Month income (section 20)", "\n└`#{input.month_income}`"] | list]
+    list = [["Total Taxation Amount (section 15)", "\n└`#{input.total_income}`"] | list]
     list
   end
 

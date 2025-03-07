@@ -9,7 +9,7 @@ defmodule TelegramTaxationBot.Taxations.Total.CalculateTotal do
 
     all_incomes =
       user_id
-      |> get_all_incomes(parsed_input.date)
+      |> get_all_incomes_current_year(parsed_input.date)
       |> transform_incomes()
 
     total_income =
@@ -36,10 +36,14 @@ defmodule TelegramTaxationBot.Taxations.Total.CalculateTotal do
   end
 
   def get_total_income_to_month(user_id, date) do
+    parsed_date = Date.from_iso8601!(date)
+    year = parsed_date.year
+    from_date = %Date{year: year, month: 1, day: 1}  # January 1st of current year
     to_date = Date.from_iso8601!(date) |> Date.end_of_month()
 
     IncomeSchema
-    |> where([i], i.user_id == ^user_id and i.date <= ^to_date)
+    |> where([i], i.user_id == ^user_id)
+    |> where([i], i.date >= ^from_date and i.date <= ^to_date)
     |> select([i], sum(i.target_amount))
     |> Repo.one()
   end
@@ -75,6 +79,20 @@ defmodule TelegramTaxationBot.Taxations.Total.CalculateTotal do
     #   [#Decimal<6200>, "USD", ~D[2022-10-01]],
     #   [#Decimal<5000>, "EUR", ~D[2022-09-29]]
     # ]
+  end
+
+  def get_all_incomes_current_year(user_id, date) do
+    parsed_date = Date.from_iso8601!(date)
+    year = parsed_date.year
+    to_date = Date.from_iso8601!(date) |> Date.end_of_month()
+    from_date = %Date{year: year, month: 1, day: 1}  # January 1st of current year
+
+    IncomeSchema
+    |> where([i], i.user_id == ^user_id)
+    |> where([i], i.date >= ^from_date and i.date <= ^to_date)
+    |> order_by([i], asc: i.date)
+    |> select([i], [i.amount, i.currency, i.date, i.target_amount])
+    |> Repo.all()
   end
 
   defp transform_incomes(incomes) do
